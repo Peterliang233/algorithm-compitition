@@ -1,7 +1,7 @@
 /*
 注意x=0的情况，没了
 */
-#include<bits/stdc++.h> 
+#include<bits/stdc++.h>
 
 using namespace std;
 typedef long long ll;
@@ -15,6 +15,11 @@ ll qp(ll a,ll b){
 		b>>=1;
 	}
 	return c;
+}
+
+ll __gcd(ll a,ll b){
+  if(b==0) return a;
+  return __gcd(b,a%b);
 }
 
 
