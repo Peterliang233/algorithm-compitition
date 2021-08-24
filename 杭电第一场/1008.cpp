@@ -1,3 +1,8 @@
+/*
+一个单调栈的题目，也可以用悬线DP法进行求解。
+我们先预处理出每个位置上面可以到达哪里。然后，
+我们利用单调栈来维护最大面积的矩形就可以了
+*/
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;

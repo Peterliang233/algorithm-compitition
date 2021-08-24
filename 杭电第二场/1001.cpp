@@ -1,3 +1,6 @@
+/*
+同样，打表找规律，然后利用eois找到通项公式即可。
+*/
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;

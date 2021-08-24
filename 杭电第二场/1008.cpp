@@ -1,110 +1,100 @@
-/* 题解
-解法一：线段树
-
-解法二：二分
-可以先进行分析，我们进行逐行分析，我们可以发现当前的可以到达的点可以通过上一行进行推导。
-所以我们先从上到下维护每一行可以到达的区间，然后我们可以枚举当前的区间的那些情况，更新当前的区间。
-枚举判断当前区间的时候，我们可以先进行二分上一行得到的区间的情况，将范围缩小逼近当前的这个小区间。
-将每一个可行的区间加到我们的答案里面
+/*
+一个背包题目，首先，每门课有一个最高分限制，同时允许出现若干门课程不及格，
+需要我们判断在控制及格的前提下最多可以得到多少分？
+对于每门课程，我们先通过01背包得到复习i天最多得到多少分数，用f数组表示，然后在学习第i门课程的情况下
+，我们枚举复习j天，挂k门课程得到的最高得分。由目前已经得到的dp方程转移过来。最后就是维护最大值就行了
 */
-
 
 #include<bits/stdc++.h>
 
 using namespace std;
-typedef long long ll;
 
+int dp[550][10],ddp[550][10]; // dp[i][j]表示学习i天，挂j门的最高得分
 
-const int N=100010;
+int f[550];  // f[i]表示学习i天得到的最高的得分
 
-const int inf=1e9+7;
-
-vector<int> a[N];
-
-struct node{
-    int l,r;
-    node(int l=0,int r=0):l(l),r(r){}
-};
-
-vector<node> ok;
-
-bool check(node a,int l,int r){
-    if(a.l<=l) return a.r>=l;
-    else if(a.l<=r) return 1;
-    return 0;
-}
-
-int calc(int st,int ed){
-    int l=0,r=ok.size()-1,ans=ok.size()-1;
-    while(l<=r){  // 二分区间都恰好[st,ed]附近 
-        int mid=(l+r)>>1;
-        if(ok[mid].l<=st) l=mid+1;
-        else r=mid-1,ans=r;
-    }
-    int res=inf,tmp=st;
-    for(int i=ans-5;i<=ans+5;i++){ // 保证结果在这个区间附近 
-        if(i<0||i>=ok.size()) continue;  // 出了边界的情况 
-        if(check(ok[i],st,ed)){  // 判断是否有交集 
-            tmp=max(tmp,ok[i].l);
-            res=min(res,tmp);
-        }
-    }
-    
-    return res==inf?-1:res;
-}
-
+map<string,int> mp;
+vector<pair<int,int> > a[55];
 void solve(){
-    int n,m,k;
-    scanf("%d%d%d",&n,&m,&k);
-    // 初始化 
-    for(int i=1;i<=n;i++){
-        a[i].clear();
-    } 
-    
-    for(int i=1;i<=k;i++){
-        int x,y;
-        scanf("%d%d",&x,&y);
-        a[x].push_back(y);
-    }
-    
-    for(int i=1;i<=n;i++){
-        a[i].push_back(m+1);
-        sort(a[i].begin(),a[i].end());
-    }
-    
-    ok.clear();
-    
-    ok.push_back(node(1,a[1][0]-1));  // 第一行能够到达的极限,一定只有一个区间 
-    ll ans=ok[0].r-ok[0].l+1,st=1;  // 当前的左端点 
-    for(int i=2;i<=n;i++){  // 从第二行开始进行枚举 
-        vector<node> cur;
-        st=1;
-        for(int j=0;j<a[i].size();j++){  // 枚举当前行的每段区间 
-            int ed=a[i][j];  // 枚举当前的右端点 
-            if(st>=ed){
-                st=ed+1;continue;
-            }
-            int st2=calc(st,ed-1); // 判断这段区间 
-            if(st2==-1){  // 如果这段区间被堵死了，那么可以直接跳过 
-                st=ed+1;
-                continue;
-            }
-            
-            // 记录这段可行的区间 
-            cur.push_back(node(st2,ed-1));
-            ans+=ed-st2; // 累加到答案 
-            st=ed+1; // 更新左端点 
-        }
-        ok=cur;
-    }
-    
-    printf("%lld\n",ans);
+	mp.clear();
+	int n;
+	cin>>n;
+	
+	for(int i=1;i<=n;i++){
+		string s;
+		cin>>s;
+		mp[s]=i;
+		a[i].clear();
+	}
+	int m;
+	cin>>m;
+	for(int i=1;i<=m;i++){
+		string s;
+		cin>>s;
+		int id=mp[s];
+		int x,y;
+		cin>>x>>y;
+		a[id].push_back(make_pair(x,y));
+	}
+	
+	int t,p;
+	cin>>t>>p;
+	
+	memset(dp,-1,sizeof(dp));
+	dp[0][0]=0;
+	p=min(n,p);
+	for(int i=1;i<=n;i++){
+		memset(f,0,sizeof(f));
+		
+		// 对于这门课程，学习t天中每天最多得到多少分数 
+		for(auto x:a[i]) {
+			for(int j=t;j>=x.second;j--){
+				f[j]=max(f[j],min(100,f[j-x.second]+x.first));
+			}
+		}
+		
+		memset(ddp,-1,sizeof(ddp));  // ddp是一个临时的dp状态，使得可以由之前的转移过来 
+		
+		
+		// 枚举对于j天，挂了k门课程的最高得分 
+		for(int j=0;j<=t;j++){
+			for(int k=0;k<=p;k++){
+				if(dp[j][k]==-1) continue; // 如果这个状态还没有 
+				
+				// 从之前计算过得到的dp中进行转移 
+				for(int d=0;d<=t;d++){
+					int nx=k;
+					if(f[d]<60) nx=k+1;
+					if(j+d<=t&&nx<=p) {
+						ddp[j+d][nx]=max(ddp[j+d][nx],dp[j][k]+f[d]);  // 当前的由之前的状态转移过来 
+					}
+				}
+			}
+		}
+		
+		for(int j=0;j<=t;j++){
+			for(int k=0;k<=p;k++){
+				dp[j][k]=ddp[j][k];
+			}
+		}
+		
+	}
+	
+	int ans=-1;
+	for(int i=0;i<=t;i++){
+		for(int j=0;j<=p;j++){
+			ans=max(ans,dp[i][j]);
+		}
+	}
+	
+	cout<<ans<<endl;
 }
+
 int main(){
-    int t;
-    scanf("%d",&t);
-    while(t--){
-        solve();
-    }
-    return 0;
+	int T;
+	cin>>T;
+	while(T--){
+		solve();
+	}
+	return 0;
 }

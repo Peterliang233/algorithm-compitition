@@ -1,3 +1,6 @@
+/*
+找打初始的序列的前面有多少个连续的字符，然后最后的答案就是2^(x-1)
+*/
 #include<iostream>
 #include<cstring>
 #include<algorithm>

@@ -1,3 +1,8 @@
+/*
+n各结点，结点之间两两连边，边权为这两个结点编号的最小公倍数。
+现在，我们需要找到一个最小生成树。根据贪心的思想，我们为了使这个生成树最小的话，尽可能选择小的边权，
+比如，我们可以找到每个数的最小质因数，让这个数和它的最小质因数连边，那么边权就是它的最小质因数了。
+*/
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -33,5 +38,3 @@ int main(){
     }
     return 0;
 }
-
-[ Copy to Clipboard ]    [ Save to File]

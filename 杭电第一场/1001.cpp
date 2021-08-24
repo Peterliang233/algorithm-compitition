@@ -1,3 +1,6 @@
+/*
+先打表找规律，然后进行求解即可
+*/
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
