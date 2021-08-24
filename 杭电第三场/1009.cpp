@@ -1,3 +1,7 @@
+/*
+一个nxn的矩阵，可以向下和向右移动，每次移动在每个地方aij和bij,最后需要我们最大化走过的suma*sumb
+*/
+
 #include<bits/stdc++.h> 
 using namespace std;
 typedef long long ll;

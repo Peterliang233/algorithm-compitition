@@ -1,3 +1,6 @@
+/*
+一个简单的模拟题，根据题目模拟即可
+*/
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
